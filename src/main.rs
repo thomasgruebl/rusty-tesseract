@@ -8,12 +8,13 @@ mod error;
 
 // the main function provides usage samples of the rusty-tesseract wrapper
 fn main() {
-    let mut img = Image {
-        path: String::from("default"),
-        ndarray: Array3::<i32>::zeros((1, 1, 1))
-    };
 
-    img.path = String::from("/home/thomas/Documents/PyCharmProjects/tesseract_test/test.png");
+    // create an Image object by specifying a path or alternatively an image array in (height, width, channel) format
+    // if path is an empty string -> rusty-tesseract tries to use the ndarray
+    let mut img = Image {
+        path: String::from("/home/thomas/Documents/PyCharmProjects/tesseract_test/test.png"),
+        ndarray: Array3::<u8>::zeros((100, 100, 3))
+    };
 
     // use default_args to call a function if no particular config is needed
     let default_args = Args::new();
@@ -47,7 +48,7 @@ fn main() {
     image_to_boxes_args.config.insert("psm", "6");
     image_to_boxes_args.config.insert("oem", "3");
 
-
+    
     // boxes printed in OUTPUT_DICT or OUTPUT_DATAFRAME format store the Key as a string (i.e. the character) and 
     // store the value as a list of strings (if the same character appears more than once)
     let boxes = rusty_tesseract::image_to_boxes(&img, image_to_boxes_args);
