@@ -1,0 +1,15 @@
+/target
+/debug
+
+Cargo.lock
+
+**/*.rs.bk
+
+*.txt
+*.box
+*.tr
+*.unicharset
+*.inttemp
+*.normproto
+*.pffmtable
+*.shapetable
