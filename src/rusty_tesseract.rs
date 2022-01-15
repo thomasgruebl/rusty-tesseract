@@ -6,6 +6,7 @@ use subprocess::Redirection;
 use std::any::{Any, TypeId};
 use polars::prelude::*;
 use ndarray::Array3;
+use image::RgbImage;
 use std::fmt;
 use std::string::ToString;
 use std::str::FromStr;
@@ -13,10 +14,12 @@ use std::io::{BufRead, BufReader};
 use std::process::{Command, Stdio};
 use std::fs;
 use substring::Substring;
+use std::env::current_dir;
 
 use crate::error::VersionError;
 use crate::error::TesseractNotFoundError;
 use crate::error::ImageFormatError;
+use crate::error::ImageNotFoundError;
 
 
 const language_pattern: &str = "";
@@ -76,14 +79,37 @@ impl Args{
     }
 }
 
+#[derive(Clone)]
 pub struct Image {
     pub path: String,
-    pub ndarray: Array3<i32>
+    pub ndarray: Array3<u8>
 }
 
 impl fmt::Display for Image {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.path)
+    }
+}
+
+impl Image {
+    fn is_empty_ndarray(&self) -> bool {
+        let mut is_empty: bool = true;
+        for elem in &self.ndarray {
+            is_empty = false;
+        }
+        return is_empty;
+    }
+
+    fn size_of_ndarray(&self) -> (usize, usize, usize) {
+        return self.ndarray.dim()
+    }
+
+    fn ndarray_to_image(self) -> RgbImage {
+        let (height, width, _) = self.size_of_ndarray();
+        let raw = self.ndarray.into_raw_vec();
+
+        RgbImage::from_raw(width as u32, height as u32, raw)
+            .expect("Couldnt convert ndarray to RgbImage.")
     }
 }
 
@@ -199,31 +225,50 @@ pub fn image_to_data(image: &Image, args: Args) {
 }
 
 pub fn image_to_boxes(image: &Image, args: Args) -> ModelOutput {
-    if check_image_format(&image) {
-        return run_tesseract(&image, &args);
-    }
-    else {
-        panic!("{}", ImageFormatError);
-    }
+    return run_tesseract(&image, &args);
 }
 
 pub fn image_to_string(image: &Image, args: Args) -> ModelOutput {
-    if check_image_format(&image) {
-        return run_tesseract(&image, &args);
-    }
-    else {
-        panic!("{}", ImageFormatError);
-    }
+    return run_tesseract(&image, &args);
 }
 
 fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
 
+    // check if tesseract is installed
     let is_installed: bool = check_if_installed();
     if !is_installed {
         panic!("{}", TesseractNotFoundError);
     }
 
-    let image = &image.to_string().replace('"', "").to_owned();
+    // check if image path or ndarray is provided
+    let mut image_arg = String::from("");
+    let is_empty_ndarray = &image.is_empty_ndarray();
+    if image.path.len() == 0 && !*is_empty_ndarray {
+        // convert ndarray to rgbimage and save image in parent directory
+        let tmp_img = image.clone();
+        let i = tmp_img.ndarray_to_image();
+        let working_dir = current_dir().unwrap().as_path().display().to_string();
+        let new_path = [working_dir, String::from("ndarray_converted.png")].join("/");
+        
+        match i.save(&new_path) {
+            Ok(r) => {
+                println!("Image saved: {:?}", new_path);
+                image_arg = new_path;
+            }, 
+            Err(e) => println!("Error while saving image: {:?}", e),
+        }
+    }
+    // both image path and ndarray are empty
+    else if image.path.len() == 0 && *is_empty_ndarray {
+        panic!("{}", ImageNotFoundError);
+    }
+    // path is filled
+    else {
+        if !check_image_format(&image) {
+            panic!("{}", ImageFormatError);
+        }
+        image_arg = image.to_string().replace('"', "").to_owned();
+    }
 
     for (key, value) in &args.config {
         println!("Key and value: {:?} {:?}", key, value)
@@ -235,9 +280,11 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
         boxarg = String::from("makebox");
     }
 
+    println!("the image arg is: {:?}", image_arg);
+
     let command = if cfg!(target_os = "windows") {
         Command::new("tesseract.exe")
-            .arg(image)
+            .arg(image_arg)
             .arg(args.out_filename)
             .arg("-l")
             .arg(args.lang)
@@ -251,7 +298,7 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
                 
     } else {
         Command::new("tesseract")
-            .arg(image)
+            .arg(image_arg)
             .arg(args.out_filename)
             .arg("-l")
             .arg(args.lang)
