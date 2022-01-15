@@ -11,9 +11,17 @@ fn main() {
 
     // create an Image object by specifying a path or alternatively an image array in (height, width, channel) format
     // if path is an empty string -> rusty-tesseract tries to use the ndarray
+
+    // you can use the new function
+    let mut img = Image::new(
+        String::from("/home/thomas/Documents/PyCharmProjects/tesseract_test/test.png"),
+        Array3::<u8>::zeros((100, 100, 3))
+    );
+
+    // or instantiate Image struct directly
     let mut img = Image {
         path: String::from("/home/thomas/Documents/PyCharmProjects/tesseract_test/test.png"),
-        ndarray: Array3::<u8>::zeros((100, 100, 3))
+        ndarray: Array3::<u8>::zeros((100, 100, 3))  // example: creates an 100x100 pixel image with 3 colour channels (RGB)
     };
 
     // use default_args to call a function if no particular config is needed
