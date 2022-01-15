@@ -1,19 +1,13 @@
 use std::collections::HashMap;
 use multimap::MultiMap;
-use subprocess::Popen;
-use subprocess::PopenConfig;
-use subprocess::Redirection;
-use std::any::{Any, TypeId};
 use polars::prelude::*;
 use ndarray::Array3;
 use image::RgbImage;
 use std::fmt;
 use std::string::ToString;
-use std::str::FromStr;
-use std::io::{BufRead, BufReader};
+use std::io::BufRead;
 use std::process::{Command, Stdio};
 use std::fs;
-use substring::Substring;
 use std::env::current_dir;
 
 use crate::error::VersionError;
@@ -21,10 +15,6 @@ use crate::error::TesseractNotFoundError;
 use crate::error::ImageFormatError;
 use crate::error::ImageNotFoundError;
 
-
-const language_pattern: &str = "";
-const encoding: &str = "utf-8";
-const rgb_mod: &str = "RGB";
 const Formats: [&'static str; 10] = ["JPEG",
                                     "JPG",
                                     "PNG",
@@ -46,8 +36,14 @@ pub struct ModelOutput {
 }
 
 impl ModelOutput {
-    fn area(&self) -> f64 {
-        return 10.0;
+    fn new() -> ModelOutput {
+        ModelOutput {
+            Output_INFO: String::new(),
+            Output_BYTES: Vec::new(),
+            Output_DICT: MultiMap::new(),
+            Output_STRING: String::new(),
+            OUTPUT_DATAFRAME: Vec::new()
+        }
     }
 }
 
@@ -66,7 +62,7 @@ pub struct Args {
     pub boxfile: bool
 }
 
-impl Args{
+impl Args {
     pub fn new() -> Args {
         Args {
             config: HashMap::new(),
@@ -92,6 +88,13 @@ impl fmt::Display for Image {
 }
 
 impl Image {
+    pub fn new(path: String, ndarray: Array3<u8>) -> Image {
+        Image {
+            path,
+            ndarray
+        }
+    }
+
     fn is_empty_ndarray(&self) -> bool {
         let mut is_empty: bool = true;
         for elem in &self.ndarray {
@@ -222,6 +225,8 @@ pub fn image_to_data(image: &Image, args: Args) {
     // else {
     //     panic!("{}", ImageFormatError);
     // }
+
+    // return list of modeloutputs?
 }
 
 pub fn image_to_boxes(image: &Image, args: Args) -> ModelOutput {
@@ -239,6 +244,9 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
     if !is_installed {
         panic!("{}", TesseractNotFoundError);
     }
+
+    assert_eq!(type_of(&image.path), type_of(&String::new()));
+    assert_eq!(type_of(&image.ndarray), type_of(&Array3::<u8>::zeros((0, 0, 0))));
 
     // check if image path or ndarray is provided
     let mut image_arg = String::from("");
@@ -312,7 +320,7 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
     };
 
     let output = command.wait_with_output().unwrap();
-    println!("outttttttttttttttttttttttt {:?}", output);
+    println!("{:?}", output);
 
     let out = output.stdout;
     let err = output.stderr;
@@ -381,7 +389,6 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
         }
     }
     
-
     let out = ModelOutput {
         Output_INFO: str_res,
         Output_BYTES: file_output.as_bytes().to_vec(),
@@ -389,7 +396,6 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
         Output_STRING: file_output,
         OUTPUT_DATAFRAME: df
     };
-
 
     return out;
 }
