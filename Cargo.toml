@@ -1,0 +1,14 @@
+[package]
+name = "rusty-tesseract"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+subprocess = "0.2.8"
+polars = "0.18.0"
+ndarray = "0.15.4"
+substring = "1.4.5"
+multimap = "0.8.3"
+prettytable-rs = { git = "https://github.com/phsym/prettytable-rs", branch = "master"}
