@@ -13,3 +13,7 @@ Cargo.lock
 *.normproto
 *.pffmtable
 *.shapetable
+
+*.png
+*.jpg
+*.tif
