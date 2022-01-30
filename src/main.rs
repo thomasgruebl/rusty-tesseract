@@ -62,3 +62,65 @@ fn main() {
     let boxes = rusty_tesseract::image_to_boxes(&img, image_to_boxes_args);
     println!("The Boxfile output is: {:?}", boxes.OUTPUT_DATAFRAME);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn basic() {
+        assert_eq!(0, 0);
+        assert_eq!(0, 0);
+        assert_eq!(0, 0);
+        assert_eq!(0, 0);
+    }
+
+    #[test]
+    fn vertical_text() {
+        let mut img = Image::new(
+            String::from("img/vertical_text.png"),
+            Array3::<u8>::zeros((100, 100, 3))
+        );
+
+        let mut image_to_string_args = Args {
+            out_filename: "out",
+            lang: "eng",
+            config: HashMap::new(),
+            timeout: 100,
+            dpi: 150,
+            boxfile: false
+        };
+
+        image_to_string_args.config.insert("psm", "6");
+        image_to_string_args.config.insert("oem", "3");
+    
+        let output_test = rusty_tesseract::image_to_string(&img, image_to_string_args);
+        assert_eq!(output_test.Output_STRING, "D\nO\nL\nO\nR\nS\nI\n\nT\n\u{c}");
+    }
+
+    #[test]
+    fn horizontal_text() {
+        let mut img = Image::new(
+            String::from("img/horizontal_text.png"),
+            Array3::<u8>::zeros((100, 100, 3))
+        );
+        let default_args = Args::new();
+        let output_test = rusty_tesseract::image_to_string(&img, default_args);
+        assert_eq!(output_test.Output_STRING, "Lorem ipsum dolor sit amet\n\u{c}");
+    }
+
+    #[test]
+    fn image_to_data() {
+
+    }
+
+    #[test]
+    fn image_to_string() {
+
+    }
+
+    #[test]
+    fn image_to_boxes() {
+
+    }
+}
