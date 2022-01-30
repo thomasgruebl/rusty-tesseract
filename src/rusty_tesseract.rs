@@ -288,6 +288,17 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
         boxarg = String::from("makebox");
     }
 
+    // check if psm and oem flags are set
+    let mut psm = "3";
+    let mut oem = "3";
+    if args.config.contains_key("psm") {
+        psm = args.config["psm"];
+    }
+
+    if args.config.contains_key("oem"){
+        oem = args.config["oem"];
+    }
+
     println!("the image arg is: {:?}", image_arg);
 
     let command = if cfg!(target_os = "windows") {
@@ -297,7 +308,11 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
             .arg("-l")
             .arg(args.lang)
             .arg("--dpi")
-            .arg("150")
+            .arg(args.dpi.to_string())
+            .arg("--psm")
+            .arg(psm)
+            .arg("--oem")
+            .arg(oem)
             .arg(boxarg)
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
@@ -311,7 +326,11 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
             .arg("-l")
             .arg(args.lang)
             .arg("--dpi")
-            .arg("150")
+            .arg(args.dpi.to_string())
+            .arg("--psm")
+            .arg(psm)
+            .arg("--oem")
+            .arg(oem)
             .arg(boxarg)
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
@@ -368,24 +387,26 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
     // multimap used for box files -> stores character as key and box boundaries as value (or list of values)
     let mut dict = MultiMap::new();
     let mut df = Vec::new();
-    for line in file_output.lines() {
-        if line.contains(" ") {
-            // fill dict
-            let tuple = line.split_once(" ").unwrap();
-            dict.insert(
-                String::from(tuple.0),
-                String::from(tuple.1),
-            );
+    if args.boxfile {
+        for line in file_output.lines() {
+            if line.contains(" ") {
+                // fill dict
+                let tuple = line.split_once(" ").unwrap();
+                dict.insert(
+                    String::from(tuple.0),
+                    String::from(tuple.1),
+                );
 
-            // fill DataFrame (Vec of Series)
-            let character: &str = &tuple.0;
-            let mut box_boundaries = Vec::new();
-            for num in tuple.1.split(" ") {
-                let num_int: i32 = num.parse::<i32>().unwrap();
-                box_boundaries.push(num_int);
+                // fill DataFrame (Vec of Series)
+                let character: &str = &tuple.0;
+                let mut box_boundaries = Vec::new();
+                for num in tuple.1.split(" ") {
+                    let num_int: i32 = num.parse::<i32>().unwrap();
+                    box_boundaries.push(num_int);
+                }
+                let tmp_series = Series::new(character, &box_boundaries);
+                df.push(tmp_series);
             }
-            let tmp_series = Series::new(character, &box_boundaries);
-            df.push(tmp_series);
         }
     }
     
