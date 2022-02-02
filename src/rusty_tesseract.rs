@@ -32,7 +32,7 @@ pub struct ModelOutput {
     pub Output_BYTES: Vec<u8>,
     pub Output_DICT: MultiMap<String, String>,
     pub Output_STRING: String,
-    pub OUTPUT_DATAFRAME: Vec<Series>
+    pub Output_DATAFRAME: Vec<Series>
 }
 
 impl ModelOutput {
@@ -42,7 +42,7 @@ impl ModelOutput {
             Output_BYTES: Vec::new(),
             Output_DICT: MultiMap::new(),
             Output_STRING: String::new(),
-            OUTPUT_DATAFRAME: Vec::new()
+            Output_DATAFRAME: Vec::new()
         }
     }
 }
@@ -53,6 +53,7 @@ impl fmt::Display for ModelOutput {
     }
 }
 
+#[derive(Clone)]
 pub struct Args {
     pub out_filename: &'static str,
     pub lang: &'static str,
@@ -212,21 +213,37 @@ pub fn get_tesseract_version() -> String {
     return str_res;
 }
 
+pub fn image_to_data(image: &Image, args: Args) -> ModelOutput {
+    let str_out: ModelOutput = image_to_string(&image, args.clone());
 
-pub fn image_to_data(image: &Image, args: Args) {
-    // return image_to_string(.....)
-    // return image_to_boxes(......)
-    // and return additional stuff such as confidences
+    let mut box_args = args.clone();
+    box_args.boxfile = true;
+    let box_out: ModelOutput = image_to_boxes(&image, box_args);
+
+    let out = ModelOutput {
+        Output_INFO: str_out.Output_INFO,
+        Output_BYTES: str_out.Output_BYTES,
+        Output_DICT: box_out.Output_DICT,
+        Output_STRING: str_out.Output_STRING,
+        Output_DATAFRAME: box_out.Output_DATAFRAME
+    };
+
+    // and return additional stuff such as confidences  --->    -c tessedit_create_tsv=1
     // check for version > 3.05
+    let mut tesstable_args = args.clone();
+    tesstable_args.config.insert("-c", "tessedit_create_tsv=1");
+    let tesstable = run_tesseract(&image, &tesstable_args);
 
-    // if check_image_format(&image) {
-    //     return run_tesseract(&image, &args);
-    // }
-    // else {
-    //     panic!("{}", ImageFormatError);
-    // }
+    if check_image_format(&image) {
+        return out;
+    }
+    else {
+        panic!("{}", ImageFormatError);
+    }
 
-    // return list of modeloutputs?
+    // maybe return Tuple of Modeloutput + Hashmap (where the hashmap contains the confidence tessdata table)
+
+    // still need to add argchecks to run_tesseract function for -c tessedit ...
 }
 
 pub fn image_to_boxes(image: &Image, args: Args) -> ModelOutput {
@@ -415,7 +432,7 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
         Output_BYTES: file_output.as_bytes().to_vec(),
         Output_DICT: dict,
         Output_STRING: file_output,
-        OUTPUT_DATAFRAME: df
+        Output_DATAFRAME: df
     };
 
     return out;
