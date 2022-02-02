@@ -14,13 +14,13 @@ fn main() {
 
     // you can use the new function
     let mut img = Image::new(
-        String::from("/home/thomas/Documents/PyCharmProjects/tesseract_test/test.png"),
+        String::from("img/string.png"),
         Array3::<u8>::zeros((100, 100, 3))
     );
 
     // or instantiate Image struct directly
     let mut img = Image {
-        path: String::from("/home/thomas/Documents/PyCharmProjects/tesseract_test/test.png"),
+        path: String::from("img/string.png"),
         ndarray: Array3::<u8>::zeros((100, 100, 3))  // example: creates an 100x100 pixel image with 3 colour channels (RGB)
     };
 
@@ -60,7 +60,12 @@ fn main() {
     // boxes printed in OUTPUT_DICT or OUTPUT_DATAFRAME format store the Key as a string (i.e. the character) and 
     // store the value as a list of strings (if the same character appears more than once)
     let boxes = rusty_tesseract::image_to_boxes(&img, image_to_boxes_args);
-    println!("The Boxfile output is: {:?}", boxes.OUTPUT_DATAFRAME);
+    println!("The Boxfile output is: {:?}", boxes.Output_DATAFRAME);
+
+
+    // image_to_data prints out both image_to_string and image_to_boxes information + a table with confidences
+    let data = rusty_tesseract::image_to_data(&img, default_args);
+    println!("The data output is: {:?}", data.Output_DICT);
 }
 
 #[cfg(test)]
@@ -68,18 +73,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn basic() {
-        assert_eq!(0, 0);
-        assert_eq!(0, 0);
-        assert_eq!(0, 0);
-        assert_eq!(0, 0);
-    }
-
-    #[test]
     fn vertical_text() {
         let mut img = Image::new(
             String::from("img/vertical_text.png"),
-            Array3::<u8>::zeros((100, 100, 3))
+            Array3::<u8>::zeros((0, 0, 3))
         );
 
         let mut image_to_string_args = Args {
@@ -102,7 +99,7 @@ mod tests {
     fn horizontal_text() {
         let mut img = Image::new(
             String::from("img/horizontal_text.png"),
-            Array3::<u8>::zeros((100, 100, 3))
+            Array3::<u8>::zeros((0, 0, 3))
         );
         let default_args = Args::new();
         let output_test = rusty_tesseract::image_to_string(&img, default_args);
@@ -116,11 +113,33 @@ mod tests {
 
     #[test]
     fn image_to_string() {
-
+        let mut img = Image::new(
+            String::from("img/string.png"),
+            Array3::<u8>::zeros((0, 0, 3))
+        );
+        let default_args = Args::new();
+        let output_test = rusty_tesseract::image_to_string(&img, default_args);
+        assert_eq!(output_test.Output_STRING, "LOREM IPSUM DOLOR SIT AMET\n\u{c}");
     }
 
     #[test]
     fn image_to_boxes() {
+        let mut img = Image::new(
+            String::from("img/string.png"),
+            Array3::<u8>::zeros((0, 0, 3))
+        );
+        let mut image_to_boxes_args = Args {
+            out_filename: "eng.testcase.exp0",
+            lang: "eng",
+            config: HashMap::new(),
+            timeout: 100,
+            dpi: 150,
+            boxfile: true
+        };
+        image_to_boxes_args.config.insert("psm", "6");
+        image_to_boxes_args.config.insert("oem", "3");
 
+        let boxes_test = rusty_tesseract::image_to_boxes(&img, image_to_boxes_args);
+        assert_eq!(boxes_test.Output_STRING, "L 18 26 36 59 0\nO 35 25 70 60 0\nR 75 26 98 59 0\nE 103 26 122 59 0\nM 127 26 162 59 0\nI 181 26 185 59 0\nP 191 26 214 59 0\nS 216 25 237 60 0\nU 240 25 263 59 0\nM 269 26 304 59 0\nD 323 26 352 59 0\nO 355 25 390 60 0\nL 360 25 415 60 0\nO 395 26 413 59 0\nR 413 25 476 60 0\nS 490 25 509 60 0\nI 490 25 518 60 0\nT 521 26 540 59 0\nA 553 26 586 59 0\nM 589 26 624 59 0\nE 603 26 649 59 0\nT 630 26 671 59 0\n");
     }
 }
