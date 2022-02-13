@@ -17,10 +17,13 @@ A Rust wrapper for Google Tesseract
 - Based on the Python wrapper for tesseract (i.e. https://github.com/madmaze/pytesseract)
 - Enables testing a pre-trained tesseract model and outputting the results in different formats such as strings, bounding boxes, dicts, or dataframes.
 
+## Dependencies
+Tesseract: https://github.com/tesseract-ocr/tesseract
+
 ## Usage
 ### 1. Read Image
 Create an Image object by specifying a path or alternatively an image array in (height, width, channel) format (similar to Python's numpy array for opencv).
-Note: Leave the Array3 parameter as is if you don't intend to use it
+Note: Leave the Array3 parameter as is if you don't intend to use it.
 ```rust
 let mut img = Image::new(
     String::from("img/string.png"),
@@ -46,7 +49,6 @@ let default_args = Args::new();
             config: HashMap::new(),
             lang: "eng",
             out_filename: "out",
-            timeout: 1000,
             dpi: 150,
             boxfile: false
             }
@@ -58,7 +60,6 @@ let mut my_args = Args {
     out_filename: "out",        // name of output_file
     lang: "eng",                // model language (tesseract default = 'eng')
     config: HashMap::new(),     // create empty hashmap to fill with command line parameters such as --psm or --oem (see tesseract --help-extra)
-    timeout: 100,               // time in seconds after which tesseract process is killed
     dpi: 150,                   // specify DPI for input image
     boxfile: false              // specify whether the output should be a bounding box or string output
 };
@@ -78,21 +79,20 @@ let mut image_to_boxes_args = Args {
     out_filename: "font_name.font.exp0",
     lang: "eng",
     config: HashMap::new(),
-    timeout: 100,
     dpi: 150,
     boxfile: true
 };
 image_to_boxes_args.config.insert("psm", "6");
 image_to_boxes_args.config.insert("oem", "3");
 
-// boxes printed in OUTPUT_DICT or OUTPUT_DATAFRAME format store the Key as a string (i.e. the character) and 
+// boxes printed in OUTPUT_DICT or OUTPUT_DATAFRAME format store the key as a string (i.e. the character) and 
 // store the value as a list of strings (if the same character occurs more than once)
 let boxes = rusty_tesseract::image_to_boxes(&img, image_to_boxes_args);
 println!("The Boxfile output is: {:?}", boxes.Output_DATAFRAME);
 
- // image_to_data prints out both image_to_string and image_to_boxes information + a table with confidences
+// image_to_data prints out both the "image_to_string()" and "image_to_boxes()" information + a creates a TSV table with confidences
 let data = rusty_tesseract::image_to_data(&img, default_args);
-println!("The data output is: {:?}", data.0.Output_DICT);
+println!("The data output is: {:?}", data.Output_DICT);
 ```
 
 ### Get tesseract version
