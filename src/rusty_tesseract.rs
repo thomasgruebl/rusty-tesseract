@@ -96,7 +96,7 @@ impl Image {
 
     fn is_empty_ndarray(&self) -> bool {
         let mut is_empty: bool = true;
-        for elem in &self.ndarray {
+        for _elem in &self.ndarray {
             is_empty = false;
         }
         return is_empty;
@@ -156,7 +156,7 @@ fn check_if_installed() -> bool {
                 .stdout(Stdio::null())
                 .spawn() {
                     Ok(_) => return true,
-                    Err(e) => return false, 
+                    Err(_e) => return false, 
         }
     }
 }
@@ -228,7 +228,7 @@ pub fn image_to_data(image: &Image, args: Args) -> ModelOutput {
 
     let mut tesstable_args = args.clone();
     tesstable_args.config.insert("-c", "tessedit_create_tsv=1");
-    let tesstable = run_tesseract(&image, &tesstable_args);
+    let _tesstable = run_tesseract(&image, &tesstable_args);
 
     if check_image_format(&image) {
         return out;
@@ -268,7 +268,7 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
         let new_path = [working_dir, String::from("ndarray_converted.png")].join("/");
         
         match i.save(&new_path) {
-            Ok(r) => {
+            Ok(_r) => {
                 println!("Image saved: {:?}", new_path);
                 image_arg = new_path;
             }, 
