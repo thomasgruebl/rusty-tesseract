@@ -35,7 +35,6 @@ fn main() {
         out_filename: "out",
         lang: "eng",
         config: HashMap::new(),
-        timeout: 100,
         dpi: 150,
         boxfile: false
     };
@@ -43,13 +42,12 @@ fn main() {
     image_to_string_args.config.insert("oem", "3");
 
     let output = rusty_tesseract::image_to_string(&img, image_to_string_args);
-    println!("The String output is: {:?}", output.Output_STRING);
+    println!("\nThe String output is: {:?}", output.Output_STRING);
 
     let mut image_to_boxes_args = Args {
         out_filename: "font_name.font.exp0",
         lang: "eng",
         config: HashMap::new(),
-        timeout: 100,
         dpi: 150,
         boxfile: true
     };
@@ -58,14 +56,15 @@ fn main() {
 
     
     // boxes printed in OUTPUT_DICT or OUTPUT_DATAFRAME format store the Key as a string (i.e. the character) and 
-    // store the value as a list of strings (if the same character appears more than once)
+    // store the value as a list of strings (if the same character occurs more than once)
     let boxes = rusty_tesseract::image_to_boxes(&img, image_to_boxes_args);
-    println!("The Boxfile output is: {:?}", boxes.Output_DATAFRAME);
+    println!("\nThe Boxfile output is: {:?}", boxes.Output_DATAFRAME);
 
 
-    // image_to_data prints out both image_to_string and image_to_boxes information + a table with confidences
+    // image_to_data prints out both image_to_string and image_to_boxes information + a creates a TSV table with confidences
     let data = rusty_tesseract::image_to_data(&img, default_args);
-    println!("The data output is: {:?}", data.Output_DICT);
+    println!("\nThe data output is: {:?}", data.Output_DICT);
+    println!("\nThe confidence tesstable can be found in the [out_filename].tsv file!\n");
 }
 
 #[cfg(test)]
@@ -83,7 +82,6 @@ mod tests {
             out_filename: "out",
             lang: "eng",
             config: HashMap::new(),
-            timeout: 100,
             dpi: 150,
             boxfile: false
         };
@@ -108,7 +106,13 @@ mod tests {
 
     #[test]
     fn image_to_data() {
-
+        let mut img = Image::new(
+            String::from("img/string.png"),
+            Array3::<u8>::zeros((0, 0, 3))
+        );
+        let default_args = Args::new();
+        let output_test = rusty_tesseract::image_to_data(&img, default_args);
+        assert_eq!(output_test.Output_STRING, "LOREM IPSUM DOLOR SIT AMET\n\u{c}");
     }
 
     #[test]
@@ -132,7 +136,6 @@ mod tests {
             out_filename: "eng.testcase.exp0",
             lang: "eng",
             config: HashMap::new(),
-            timeout: 100,
             dpi: 150,
             boxfile: true
         };

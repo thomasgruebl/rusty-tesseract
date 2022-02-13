@@ -58,7 +58,6 @@ pub struct Args {
     pub out_filename: &'static str,
     pub lang: &'static str,
     pub config: HashMap<&'static str, &'static str>,
-    pub timeout: i32,
     pub dpi: i32,
     pub boxfile: bool
 }
@@ -69,10 +68,9 @@ impl Args {
             config: HashMap::new(),
             lang: "eng",
             out_filename: "out",
-            timeout: 1000,
             dpi: 150,
             boxfile: false
-            }
+        }
     }
 }
 
@@ -228,8 +226,6 @@ pub fn image_to_data(image: &Image, args: Args) -> ModelOutput {
         Output_DATAFRAME: box_out.Output_DATAFRAME
     };
 
-    // and return additional stuff such as confidences  --->    -c tessedit_create_tsv=1
-    // check for version > 3.05
     let mut tesstable_args = args.clone();
     tesstable_args.config.insert("-c", "tessedit_create_tsv=1");
     let tesstable = run_tesseract(&image, &tesstable_args);
@@ -240,10 +236,6 @@ pub fn image_to_data(image: &Image, args: Args) -> ModelOutput {
     else {
         panic!("{}", ImageFormatError);
     }
-
-    // maybe return Tuple of Modeloutput + Hashmap (where the hashmap contains the confidence tessdata table)
-
-    // still need to add argchecks to run_tesseract function for -c tessedit ...
 }
 
 pub fn image_to_boxes(image: &Image, args: Args) -> ModelOutput {
@@ -296,13 +288,19 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
     }
 
     for (key, value) in &args.config {
-        println!("Key and value: {:?} {:?}", key, value)
+        println!("Configuration: {:?}:{:?}", key, value)
     }
 
     // check if boxmode is activated
-    let mut boxarg = String::from("");
+    let mut boxarg = String::new();
     if args.boxfile {
         boxarg = String::from("makebox");
+    }
+
+    // check if tesstable command is given
+    let mut tesstable_arg = "tessedit_create_tsv=0";
+    if args.config.contains_key("-c") {
+        tesstable_arg = args.config["-c"];
     }
 
     // check if psm and oem flags are set
@@ -330,13 +328,15 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
             .arg(psm)
             .arg("--oem")
             .arg(oem)
+            .arg("-c")
+            .arg(tesstable_arg)
             .arg(boxarg)
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn()
             .unwrap()
-                
-    } else {
+    } 
+    else {
         Command::new("tesseract")
             .arg(image_arg)
             .arg(args.out_filename)
@@ -348,6 +348,8 @@ fn run_tesseract(image: &Image, args: &Args) -> ModelOutput {
             .arg(psm)
             .arg("--oem")
             .arg(oem)
+            .arg("-c")
+            .arg(tesstable_arg)
             .arg(boxarg)
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
