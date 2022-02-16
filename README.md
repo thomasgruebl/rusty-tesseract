@@ -98,7 +98,7 @@ println!("The data output is: {:?}", data.Output_DICT);
 ### Get tesseract version
 ```rust
 let tesseract_version = rusty_tesseract::get_tesseract_version();
-    println!("The tesseract version is: {:?}", tesseract_version);
+println!("The tesseract version is: {:?}", tesseract_version);
 ```
 
 ## Contributing
