@@ -5,6 +5,7 @@ use std::collections::HashMap;
 
 mod error;
 
+/// Refer to https://github.com/thomasgruebl/rusty-tesseract
 
 // the main function provides usage samples of the rusty-tesseract wrapper
 fn main() {
