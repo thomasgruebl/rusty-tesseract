@@ -15,4 +15,3 @@ ndarray = "0.15.4"
 substring = "1.4.5"
 multimap = "0.8.3"
 image = "0.23.14"
-prettytable-rs = { git = "https://github.com/phsym/prettytable-rs", branch = "master"}
