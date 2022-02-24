@@ -12,6 +12,12 @@ A Rust wrapper for Google Tesseract
 <img src="https://img.shields.io/github/issues/thomasgruebl/rusty-tesseract.svg?style=plastic" alt="Issues">
 </a>
 
+## Installation
+Add the following line to your <b>Cargo.toml</b> file:
+```rust
+rusty-tesseract = "1.0.0"
+```
+
 ## Description
 - Brings all relevant command-line tesseract functionality to Rust
 - Based on the Python wrapper for tesseract (i.e. https://github.com/madmaze/pytesseract)
