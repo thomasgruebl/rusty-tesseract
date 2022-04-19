@@ -5,6 +5,7 @@ edition = "2021"
 authors = ["thomasgruebl"]
 description = "A Rust wrapper for Google Tesseract"
 license = "MIT"
+repository = "https://github.com/thomasgruebl/rusty-tesseract"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
