@@ -1,7 +1,7 @@
 # rusty-tesseract
 A Rust wrapper for Google Tesseract
 
-![GitHub last commit](https://img.shields.io/github/last-commit/thomasgruebl/rusty-tesseract?style=plastic) ![GitHub](https://img.shields.io/github/license/thomasgruebl/phone-scraper?style=plastic) <a style="text-decoration: none" href="https://github.com/thomasgruebl/rusty-tesseract/stargazers">
+![GitHub last commit](https://img.shields.io/github/last-commit/thomasgruebl/rusty-tesseract?style=plastic) ![GitHub](https://img.shields.io/github/license/thomasgruebl/rusty-tesseract?style=plastic) <a style="text-decoration: none" href="https://github.com/thomasgruebl/rusty-tesseract/stargazers">
 <img src="https://img.shields.io/github/stars/thomasgruebl/rusty-tesseract.svg?style=plastic" alt="Stars">
 </a>
 <a style="text-decoration: none" href="https://github.com/thomasgruebl/rusty-tesseract/fork">
