@@ -1,5 +1,5 @@
 mod rusty_tesseract;
-use rusty_tesseract::{Image, Args};
+use crate::rusty_tesseract::{Image, Args};
 use ndarray::Array3;
 use std::collections::HashMap;
 
