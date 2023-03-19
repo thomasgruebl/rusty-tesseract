@@ -1,4 +1,5 @@
 # rusty-tesseract
+
 A Rust wrapper for Google Tesseract
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/thomasgruebl/rusty-tesseract?style=plastic) ![GitHub](https://img.shields.io/github/license/thomasgruebl/rusty-tesseract?style=plastic) <a style="text-decoration: none" href="https://github.com/thomasgruebl/rusty-tesseract/stargazers">
@@ -13,23 +14,30 @@ A Rust wrapper for Google Tesseract
 </a>
 
 ## Installation
+
 Add the following line to your <b>Cargo.toml</b> file:
+
 ```rust
-rusty-tesseract = "1.0.0"
+rusty-tesseract = "1.0.1"
 ```
 
 ## Description
+
 - Brings all relevant command-line tesseract functionality to Rust
 - Based on the Python wrapper for tesseract (i.e. https://github.com/madmaze/pytesseract)
 - Enables testing a pre-trained tesseract model and outputting the results in different formats such as strings, bounding boxes, dicts, or dataframes.
 
 ## Dependencies
+
 Tesseract: https://github.com/tesseract-ocr/tesseract
 
 ## Usage
+
 ### 1. Read Image
+
 Create an Image object by specifying a path or alternatively an image array in (height, width, channel) format (similar to Python's numpy array for opencv).
 Note: Leave the Array3 parameter as is if you don't intend to use it.
+
 ```rust
 let mut img = Image::new(
     String::from("img/string.png"),
@@ -45,7 +53,9 @@ let mut img = Image {
 ```
 
 ### 2. Set tesseract parameters
-Set tesseract parameters using the Args struct. 
+
+Set tesseract parameters using the Args struct.
+
 ```rust
 let default_args = Args::new();
 
@@ -74,7 +84,9 @@ image_to_string_args.config.insert("oem", "3");  // define optical character rec
 ```
 
 ### 3. Get the tesseract model output
+
 Choose either string, bounding box or data output:
+
 ```rust
 // string output
 let output = rusty_tesseract::image_to_string(&img, my_args);
@@ -91,7 +103,7 @@ let mut image_to_boxes_args = Args {
 image_to_boxes_args.config.insert("psm", "6");
 image_to_boxes_args.config.insert("oem", "3");
 
-// boxes printed in OUTPUT_DICT or OUTPUT_DATAFRAME format store the key as a string (i.e. the character) and 
+// boxes printed in OUTPUT_DICT or OUTPUT_DATAFRAME format store the key as a string (i.e. the character) and
 // store the value as a list of strings (if the same character occurs more than once)
 let boxes = rusty_tesseract::image_to_boxes(&img, image_to_boxes_args);
 println!("The Boxfile output is: {:?}", boxes.Output_DATAFRAME);
@@ -102,6 +114,7 @@ println!("The data output is: {:?}", data.Output_DICT);
 ```
 
 ### Get tesseract version
+
 ```rust
 let tesseract_version = rusty_tesseract::get_tesseract_version();
 println!("The tesseract version is: {:?}", tesseract_version);
