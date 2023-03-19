@@ -1,5 +1,7 @@
-mod error;
-mod rusty_tesseract;
+pub mod error;
+pub mod tesseract;
 
 pub use error::*;
-pub use crate::rusty_tesseract::*;
+pub use tesseract::*;
+
+pub use ndarray;
