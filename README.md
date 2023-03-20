@@ -39,16 +39,16 @@ Create an Image object by specifying a path or alternatively an image array in (
 Note: Leave the Array3 parameter as is if you don't intend to use it.
 
 ```rust
-let mut img = Image::new(
-    String::from("img/string.png"),
-    Array3::<u8>::zeros((100, 100, 3))
+let _ = Image::new(
+        String::from("img/string.png"),
+        Array3::<u8>::zeros((100, 100, 3)),
 );
 
 // alternatively instantiate directly:
 
 let mut img = Image {
     path: String::from("img/string.png"),
-    ndarray: Array3::<u8>::zeros((100, 100, 3))  // example: creates an 100x100 pixel image with 3 colour channels (RGB)
+    ndarray: Array3::<u8>::zeros((100, 100, 3)),  // example: creates an 100x100 pixel image with 3 colour channels (RGB)
 };
 ```
 
@@ -90,7 +90,7 @@ Choose either string, bounding box or data output:
 ```rust
 // string output
 let output = rusty_tesseract::image_to_string(&img, my_args);
-    println!("The String output is: {:?}", output.Output_STRING);
+    println!("The String output is: {:?}", output.output);
 
 // define bounding box parameters
 let mut image_to_boxes_args = Args {
@@ -106,11 +106,11 @@ image_to_boxes_args.config.insert("oem", "3");
 // boxes printed in OUTPUT_DICT or OUTPUT_DATAFRAME format store the key as a string (i.e. the character) and
 // store the value as a list of strings (if the same character occurs more than once)
 let boxes = rusty_tesseract::image_to_boxes(&img, image_to_boxes_args);
-println!("The Boxfile output is: {:?}", boxes.Output_DATAFRAME);
+println!("The Boxfile output is: {:?}", boxes.dataframe);
 
 // image_to_data prints out both the "image_to_string()" and "image_to_boxes()" information + a creates a TSV table with confidences
 let data = rusty_tesseract::image_to_data(&img, default_args);
-println!("The data output is: {:?}", data.Output_DICT);
+println!("The data output is: {:?}", data.dict);
 ```
 
 ### Get tesseract version
