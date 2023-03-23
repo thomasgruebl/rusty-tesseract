@@ -18,7 +18,7 @@ A Rust wrapper for Google Tesseract
 Add the following line to your <b>Cargo.toml</b> file:
 
 ```rust
-rusty-tesseract = "1.0.1"
+rusty-tesseract = "1.1.0"
 ```
 
 ## Description
@@ -39,7 +39,7 @@ Create an Image object by specifying a path or alternatively an image array in (
 Note: Leave the Array3 parameter as is if you don't intend to use it.
 
 ```rust
-let _ = Image::new(
+let mut img = Image::new(
         String::from("img/string.png"),
         Array3::<u8>::zeros((100, 100, 3)),
 );
@@ -57,30 +57,25 @@ let mut img = Image {
 Set tesseract parameters using the Args struct.
 
 ```rust
-let default_args = Args::new();
+let default_args = Args::default();
 
 // the default parameters are
-/* pub fn new() -> Args {
-        Args {
-            config: HashMap::new(),
-            lang: "eng",
-            out_filename: "out",
-            dpi: 150,
-            boxfile: false
-            }
-    }
+/*
+Args {
+    lang: "eng",
+    dpi: 150,
+    psm: 3,
+    oem: 3,
+}
 */
 
 // fill your own argument struct if needed
 let mut my_args = Args {
-    out_filename: "out",        // name of output_file
-    lang: "eng",                // model language (tesseract default = 'eng')
-    config: HashMap::new(),     // create empty hashmap to fill with command line parameters such as --psm or --oem (see tesseract --help-extra)
-    dpi: 150,                   // specify DPI for input image
-    boxfile: false              // specify whether the output should be a bounding box or string output
+    lang: "eng",    // model language (tesseract default = 'eng')
+    dpi: 150,       // specify DPI for input image
+    psm: 3,         // define page segmentation mode 6 (i.e. "Assume a single uniform block of text")
+    oem: 3,         // define optical character recognition mode 3 (i.e. "Default, based on what is available")
 };
-image_to_string_args.config.insert("psm", "6");  // define page segmentation mode 6 (i.e. "Assume a single uniform block of text")
-image_to_string_args.config.insert("oem", "3");  // define optical character recognition mode 3 (i.e. "Default, based on what is available")
 ```
 
 ### 3. Get the tesseract model output
@@ -88,35 +83,42 @@ image_to_string_args.config.insert("oem", "3");  // define optical character rec
 Choose either string, bounding box or data output:
 
 ```rust
-// string output
-let output = rusty_tesseract::image_to_string(&img, my_args);
-    println!("The String output is: {:?}", output.output);
-
-// define bounding box parameters
-let mut image_to_boxes_args = Args {
-    out_filename: "font_name.font.exp0",
+// define parameters
+let mut my_args = Args {
     lang: "eng",
-    config: HashMap::new(),
     dpi: 150,
-    boxfile: true
+    psm: 6,
+    oem: 3
 };
-image_to_boxes_args.config.insert("psm", "6");
-image_to_boxes_args.config.insert("oem", "3");
 
-// boxes printed in OUTPUT_DICT or OUTPUT_DATAFRAME format store the key as a string (i.e. the character) and
-// store the value as a list of strings (if the same character occurs more than once)
-let boxes = rusty_tesseract::image_to_boxes(&img, image_to_boxes_args);
-println!("The Boxfile output is: {:?}", boxes.dataframe);
+// string output
+let output = rusty_tesseract::image_to_string(&img, &my_args).unwrap();
+    println!("The String output is: {:?}", output);
 
-// image_to_data prints out both the "image_to_string()" and "image_to_boxes()" information + a creates a TSV table with confidences
-let data = rusty_tesseract::image_to_data(&img, default_args);
-println!("The data output is: {:?}", data.dict);
+
+
+// image_to_boxes creates a BoxOutput containing the parsed output from Tesseract when using the "makebox" Parameter
+let box_output = rusty_tesseract::image_to_boxes(&img, &my_args).unwrap();
+println!(
+    "The first boxfile symbol is: {}",
+    box_output.boxes[0].symbol
+);
+println!("The full boxfile output is:\n{}", box_output.output);
+
+// image_to_data creates a DataOutput containing the parsed output from Tesseract when using the "TSV" Parameter
+let data_output = rusty_tesseract::image_to_data(&img, &my_args).unwrap();
+let first_text_line = &data_output.data[4];
+println!(
+    "The first text is '{}' with confidence {}",
+    first_text_line.text, first_text_line.conf
+);
+println!("The full data output is:\n{}", data_output.output);
 ```
 
 ### Get tesseract version
 
 ```rust
-let tesseract_version = rusty_tesseract::get_tesseract_version();
+let tesseract_version = rusty_tesseract::get_tesseract_version().unwrap();
 println!("The tesseract version is: {:?}", tesseract_version);
 ```
 
