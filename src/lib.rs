@@ -1,4 +1,4 @@
 pub mod tesseract;
 
-pub use ndarray;
+pub use image;
 pub use tesseract::*;

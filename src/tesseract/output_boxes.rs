@@ -75,8 +75,6 @@ fn string_to_boxes(output: &str) -> TessResult<Vec<Box>> {
 
 #[cfg(test)]
 mod tests {
-    use ndarray::Array3;
-
     use crate::{output_boxes::string_to_boxes, tesseract::*};
 
     #[test]
@@ -97,10 +95,7 @@ mod tests {
 
     #[test]
     fn test_image_to_boxes() {
-        let img = Image::new(
-            String::from("img/string.png"),
-            Array3::<u8>::zeros((0, 0, 3)),
-        );
+        let img = Image::from_path("img/string.png").unwrap();
         let mut image_to_boxes_args = Args::default();
         image_to_boxes_args.psm = 6;
 

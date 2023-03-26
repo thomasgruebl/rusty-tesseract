@@ -18,7 +18,7 @@ A Rust wrapper for Google Tesseract
 Add the following line to your <b>Cargo.toml</b> file:
 
 ```rust
-rusty-tesseract = "1.1.0"
+rusty-tesseract = "1.1.1"
 ```
 
 ## Description
@@ -35,21 +35,19 @@ Tesseract: https://github.com/tesseract-ocr/tesseract
 
 ### 1. Read Image
 
-Create an Image object by specifying a path or alternatively an image array in (height, width, channel) format (similar to Python's numpy array for opencv).
-Note: Leave the Array3 parameter as is if you don't intend to use it.
+Create an Image object by specifying a path or alternatively a DynamicImage from the image crate https://docs.rs/image/latest/image/
 
 ```rust
-let mut img = Image::new(
-        String::from("img/string.png"),
-        Array3::<u8>::zeros((100, 100, 3)),
-);
+// you can use the from_path function
+let _ = Image::from_path("img/string.png");
 
-// alternatively instantiate directly:
 
-let mut img = Image {
-    path: String::from("img/string.png"),
-    ndarray: Array3::<u8>::zeros((100, 100, 3)),  // example: creates an 100x100 pixel image with 3 colour channels (RGB)
-};
+// or instantiate Image from a DynamicImage
+let dynamic_image = ImageReader::open("img/string.png")
+    .unwrap()
+    .decode()
+    .unwrap();
+let img = Image::from_dynamic_image(&dynamic_image).unwrap();
 ```
 
 ### 2. Set tesseract parameters

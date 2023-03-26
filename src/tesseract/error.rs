@@ -11,13 +11,14 @@ pub enum TessError {
     ['JPEG','JPG','PNG','PBM','PGM','PPM','TIFF','BMP','GIF','WEBP']"
     )]
     ImageFormatError,
-    #[error(
-        "Both the image path and the ndarray of your Image object are empty.\n\
-    Please assign an image path or pass an ndarray."
-    )]
+    #[error("Please assign a valid image path.")]
     ImageNotFoundError,
     #[error("Data could not be parsed.")]
     ParseError,
+    #[error("Could not create tempfile.\n{0}")]
+    TempfileError(String),
+    #[error("Could not save dynamic image to tempfile.\n{0}")]
+    DynamicImageError(String),
 }
 
 pub type TessResult<T> = Result<T, TessError>;

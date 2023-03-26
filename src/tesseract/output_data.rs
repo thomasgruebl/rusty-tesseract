@@ -107,8 +107,6 @@ fn string_to_data(output: &str) -> TessResult<Vec<Data>> {
 
 #[cfg(test)]
 mod tests {
-    use ndarray::Array3;
-
     use crate::{output_data::string_to_data, *};
 
     #[test]
@@ -136,10 +134,7 @@ mod tests {
 
     #[test]
     fn test_image_to_data() {
-        let img = Image::new(
-            String::from("img/string.png"),
-            Array3::<u8>::zeros((0, 0, 3)),
-        );
+        let img = Image::from_path("img/string.png").unwrap();
         let mut image_to_boxes_args = Args::default();
         image_to_boxes_args.psm = 6;
 

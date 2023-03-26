@@ -1,23 +1,20 @@
-use rusty_tesseract::{ndarray::Array3, Args, Image};
-
+use image::io::Reader as ImageReader;
+use rusty_tesseract::{Args, Image};
 /// Refer to https://github.com/thomasgruebl/rusty-tesseract
 
 // the main function provides usage samples of the rusty-tesseract wrapper
 fn main() {
-    // create an Image object by specifying a path or alternatively an image array in (height, width, channel) format
-    // if path is an empty string -> rusty-tesseract tries to use the ndarray
+    // create an Image object by specifying a path or alternatively a DynamicImage from the image crate https://docs.rs/image/latest/image/
 
-    // you can use the new function
-    let _ = Image::new(
-        String::from("img/string.png"),
-        Array3::<u8>::zeros((100, 100, 3)),
-    );
+    // you can use the from_path function
+    let _ = Image::from_path("img/string.png");
 
-    // or instantiate Image struct directly
-    let img = Image {
-        path: String::from("img/string.png"),
-        ndarray: Array3::<u8>::zeros((100, 100, 3)), // example: creates an 100x100 pixel image with 3 colour channels (RGB)
-    };
+    // or instantiate Image from a DynamicImage
+    let dynamic_image = ImageReader::open("img/string.png")
+        .unwrap()
+        .decode()
+        .unwrap();
+    let img = Image::from_dynamic_image(&dynamic_image).unwrap();
 
     // use default_args to call a function if no particular config is needed
     let default_args = Args::default();
@@ -60,10 +57,7 @@ mod tests {
 
     #[test]
     fn vertical_text() {
-        let img = Image::new(
-            String::from("img/vertical_text.png"),
-            Array3::<u8>::zeros((0, 0, 3)),
-        );
+        let img = Image::from_path("img/vertical_text.png").unwrap();
 
         let image_to_string_args = Args {
             psm: 6,
@@ -79,10 +73,7 @@ mod tests {
 
     #[test]
     fn horizontal_text() {
-        let img = Image::new(
-            String::from("img/horizontal_text.png"),
-            Array3::<u8>::zeros((0, 0, 3)),
-        );
+        let img = Image::from_path("img/horizontal_text.png").unwrap();
         let default_args = Args::default();
         let output = rusty_tesseract::image_to_string(&img, &default_args).unwrap();
         assert_eq!(output.trim(), "Lorem ipsum dolor sit amet");
@@ -90,10 +81,7 @@ mod tests {
 
     #[test]
     fn image_to_string() {
-        let img = Image::new(
-            String::from("img/string.png"),
-            Array3::<u8>::zeros((0, 0, 3)),
-        );
+        let img = Image::from_path("img/string.png").unwrap();
         let default_args = Args::default();
         let output = rusty_tesseract::image_to_string(&img, &default_args).unwrap();
         assert_eq!(output.trim(), "LOREM IPSUM DOLOR SIT AMET");

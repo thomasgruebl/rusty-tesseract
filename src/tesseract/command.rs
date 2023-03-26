@@ -1,33 +1,8 @@
 use super::*;
-use ndarray::Array3;
-use std::env::current_dir;
 use std::process::{Command, Stdio};
 use std::string::ToString;
 
 use crate::error::{TessError, TessResult};
-
-pub const FORMATS: [&'static str; 10] = [
-    "JPEG", "JPG", "PNG", "PBM", "PGM", "PPM", "TIFF", "BMP", "GIF", "WEBP",
-];
-
-fn type_of<T>(_: &T) -> String {
-    let t = String::from(std::any::type_name::<T>());
-    return t;
-}
-
-fn check_image_format(img: &Image) -> TessResult<()> {
-    let splits: Vec<&str> = img.path.split(".").collect();
-    let format = splits.last().unwrap().to_string();
-    let tmp = String::from(&format).to_uppercase();
-    let tmp2 = String::from(&format).to_lowercase();
-    let uppercase_format = tmp.as_str();
-    let format = tmp2.as_str();
-
-    if FORMATS.contains(&format) || FORMATS.contains(&uppercase_format) {
-        return Ok(());
-    }
-    Err(TessError::ImageFormatError)
-}
 
 fn get_tesseract_command() -> Command {
     let tesseract = if cfg!(target_os = "windows") {
@@ -93,45 +68,9 @@ pub fn image_to_string(image: &Image, args: &Args) -> TessResult<String> {
 }
 
 pub(crate) fn create_tesseract_command(image: &Image, args: &Args) -> TessResult<Command> {
-    check_image_format(image)?;
-
-    assert_eq!(type_of(&image.path), type_of(&String::new()));
-    assert_eq!(
-        type_of(&image.ndarray),
-        type_of(&Array3::<u8>::zeros((0, 0, 0)))
-    );
-
-    // check if image path or ndarray is provided
-    let mut image_arg = String::from("");
-    let is_empty_ndarray = &image.is_empty_ndarray();
-    if image.path.len() == 0 && !*is_empty_ndarray {
-        // convert ndarray to rgbimage and save image in parent directory
-        let tmp_img = image.clone();
-        let i = tmp_img.ndarray_to_image();
-        let working_dir = current_dir().unwrap().as_path().display().to_string();
-        let new_path = [working_dir, String::from("ndarray_converted.png")].join("/");
-
-        match i.save(&new_path) {
-            Ok(_r) => {
-                println!("Image saved: {:?}", new_path);
-                image_arg = new_path;
-            }
-            Err(e) => println!("Error while saving image: {:?}", e),
-        }
-    }
-    // both image path and ndarray are empty
-    else if image.path.len() == 0 && *is_empty_ndarray {
-        return Err(TessError::ImageNotFoundError);
-    }
-    // path is filled
-    else {
-        check_image_format(&image)?;
-        image_arg = image.to_string().replace('"', "").to_owned();
-    }
-
     let mut command = get_tesseract_command();
     command
-        .arg(image_arg)
+        .arg(image.get_image_path()?)
         .arg("stdout")
         .arg("-l")
         .arg(args.lang)
