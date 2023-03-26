@@ -10,6 +10,7 @@ use crate::{TessError, TessResult};
 #[derive(Clone)]
 pub struct Args {
     pub lang: &'static str,
+    pub config_variables: &'static str,
     pub dpi: i32,
     pub psm: i32,
     pub oem: i32,
@@ -19,6 +20,7 @@ impl Default for Args {
     fn default() -> Self {
         Args {
             lang: "eng",
+            config_variables: "=",
             dpi: 150,
             psm: 3,
             oem: 3,
