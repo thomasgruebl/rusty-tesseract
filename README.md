@@ -70,6 +70,8 @@ Args {
 // fill your own argument struct if needed
 let mut my_args = Args {
     lang: "eng",    // model language (tesseract default = 'eng')
+    // use config_variables: "="     if no config variables are required
+    config_variables: "'tessedit_char_whitelist=abcdefghijklmnopqrstuvwABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'", // -c VAR=VALUE Set value for config variables. This example shows a whitelist for the normal alphabet.Multiple -c arguments are allowed. Allowed commands can be found by running 'tesseract --print-parameters'
     dpi: 150,       // specify DPI for input image
     psm: 3,         // define page segmentation mode 6 (i.e. "Assume a single uniform block of text")
     oem: 3,         // define optical character recognition mode 3 (i.e. "Default, based on what is available")
@@ -84,6 +86,7 @@ Choose either string, bounding box or data output:
 // define parameters
 let mut my_args = Args {
     lang: "eng",
+    config_variables: "'tessedit_char_whitelist=abcdefghijklmnopqrstuvwABCDEFGHIJKLMNOPQRSTUVWXYZ'",
     dpi: 150,
     psm: 6,
     oem: 3
