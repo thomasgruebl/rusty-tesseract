@@ -74,6 +74,8 @@ pub(crate) fn create_tesseract_command(image: &Image, args: &Args) -> TessResult
         .arg("stdout")
         .arg("-l")
         .arg(args.lang)
+        .arg("-c")
+        .arg(args.config_variables.to_string())
         .arg("--dpi")
         .arg(args.dpi.to_string())
         .arg("--psm")
