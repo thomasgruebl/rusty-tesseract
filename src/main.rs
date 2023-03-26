@@ -25,6 +25,8 @@ fn main() {
     // fill your own argument struct if needed
     let image_to_string_args = Args {
         lang: "eng",
+        // config_variables: "=",       <----- if no config variables are needed, otherwise:
+        config_variables: "'tessedit_char_whitelist=abcdefghijklmnopqrstuvwABCDEFGHIJKLMNOPQRSTUVWXYZ'",
         dpi: 150,
         psm: 6,
         oem: 3,
