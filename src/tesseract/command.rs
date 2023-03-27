@@ -1,9 +1,17 @@
 use super::*;
-use std::os::windows::process::CommandExt;
 use std::process::{Command, Stdio};
 use std::string::ToString;
 
 use crate::error::{TessError, TessResult};
+
+#[cfg(target_os = "windows")]
+use {
+    std::os::windows::process::CommandExt
+};
+
+#[cfg(target_os = "windows")]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
+
 
 fn get_tesseract_command() -> Command {
     let tesseract = if cfg!(target_os = "windows") {
@@ -22,16 +30,13 @@ pub fn get_tesseract_version() -> TessResult<String> {
     run_tesseract_command(&mut command)
 }
 
-const CREATE_NO_WINDOW: u32 = 0x08000000;
-
 pub(crate) fn run_tesseract_command(command: &mut Command) -> TessResult<String> {
     if cfg!(debug_assertions) {
         show_command(command);
     }
 
-    if cfg!(windows) {
-        command.creation_flags(CREATE_NO_WINDOW);
-    }
+    #[cfg(target_os = "windows")]
+    command.creation_flags(CREATE_NO_WINDOW);
 
     let child = command
         .stdout(Stdio::piped())
