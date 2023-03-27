@@ -18,7 +18,7 @@ A Rust wrapper for Google Tesseract
 Add the following line to your <b>Cargo.toml</b> file:
 
 ```rust
-rusty-tesseract = "1.1.2"
+rusty-tesseract = "1.1.3"
 ```
 
 ## Description
@@ -69,9 +69,17 @@ Args {
 
 // fill your own argument struct if needed
 let mut my_args = Args {
-    lang: "eng",    // model language (tesseract default = 'eng')
-    // use config_variables: "="     if no config variables are required
-    config_variables: "'tessedit_char_whitelist=abcdefghijklmnopqrstuvwABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'", // -c VAR=VALUE Set value for config variables. This example shows a whitelist for the normal alphabet.Multiple -c arguments are allowed. Allowed commands can be found by running 'tesseract --print-parameters'
+    //model language (tesseract default = 'eng')
+    //available languages can be found by running 'rusty_tesseract::get_tesseract_langs()'
+    lang: "eng",
+
+    //map of config variables
+    //this example shows a whitelist for the normal alphabet. Multiple arguments are allowed.
+    //available arguments can be found by running 'rusty_tesseract::get_tesseract_config_parameters()'
+    config_variables: HashMap::from([(
+            "tessedit_char_whitelist".into(),
+            "abcdefghijklmnopqrstuvwABCDEFGHIJKLMNOPQRSTUVWXYZ".into(),
+        )]),
     dpi: 150,       // specify DPI for input image
     psm: 3,         // define page segmentation mode 6 (i.e. "Assume a single uniform block of text")
     oem: 3,         // define optical character recognition mode 3 (i.e. "Default, based on what is available")
@@ -116,11 +124,20 @@ println!(
 println!("The full data output is:\n{}", data_output.output);
 ```
 
-### Get tesseract version
+### Get informations about tesseract
 
 ```rust
+//tesseract version
 let tesseract_version = rusty_tesseract::get_tesseract_version().unwrap();
 println!("The tesseract version is: {:?}", tesseract_version);
+
+//available languages
+let tesseract_langs = rusty_tesseract::get_tesseract_langs().unwrap();
+println!("The available languages are: {:?}", tesseract_langs);
+
+//available config parameters
+let parameters = rusty_tesseract::get_tesseract_config_parameters().unwrap();
+println!("Example config parameter: {}", parameters.config_parameters.first().unwrap());
 ```
 
 ## Contributing

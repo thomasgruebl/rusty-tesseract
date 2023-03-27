@@ -5,15 +5,12 @@ use std::string::ToString;
 use crate::error::{TessError, TessResult};
 
 #[cfg(target_os = "windows")]
-use {
-    std::os::windows::process::CommandExt
-};
+use std::os::windows::process::CommandExt;
 
 #[cfg(target_os = "windows")]
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
-
-fn get_tesseract_command() -> Command {
+pub(crate) fn get_tesseract_command() -> Command {
     let tesseract = if cfg!(target_os = "windows") {
         "tesseract.exe"
     } else {
@@ -28,6 +25,15 @@ pub fn get_tesseract_version() -> TessResult<String> {
     command.arg("--version");
 
     run_tesseract_command(&mut command)
+}
+
+pub fn get_tesseract_langs() -> TessResult<Vec<String>> {
+    let mut command = get_tesseract_command();
+    command.arg("--list-langs");
+
+    let output = run_tesseract_command(&mut command)?;
+    let langs = output.lines().skip(1).map(|x| x.into()).collect();
+    Ok(langs)
 }
 
 pub(crate) fn run_tesseract_command(command: &mut Command) -> TessResult<String> {
@@ -85,9 +91,7 @@ pub(crate) fn create_tesseract_command(image: &Image, args: &Args) -> TessResult
         .arg(image.get_image_path()?)
         .arg("stdout")
         .arg("-l")
-        .arg(args.lang)
-        .arg("-c")
-        .arg(args.config_variables.to_string())
+        .arg(args.lang.clone())
         .arg("--dpi")
         .arg(args.dpi.to_string())
         .arg("--psm")
@@ -95,5 +99,21 @@ pub(crate) fn create_tesseract_command(image: &Image, args: &Args) -> TessResult
         .arg("--oem")
         .arg(args.oem.to_string());
 
+    if let Some(parameter) = args.get_config_variable_args() {
+        command.arg("-c").arg(parameter);
+    }
+
     Ok(command)
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::*;
+
+    #[test]
+    fn test_get_tesseract_langs() {
+        let langs = get_tesseract_langs().unwrap();
+
+        assert!(langs.contains(&"eng".into()));
+    }
 }
