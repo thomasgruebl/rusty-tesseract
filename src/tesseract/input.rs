@@ -1,16 +1,16 @@
 use image::DynamicImage;
-
 use std::{
-    fmt,
+    collections::HashMap,
+    fmt::{self},
     path::{Path, PathBuf},
 };
 
 use crate::{TessError, TessResult};
 
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Args {
-    pub lang: &'static str,
-    pub config_variables: &'static str,
+    pub lang: String,
+    pub config_variables: HashMap<String, String>,
     pub dpi: i32,
     pub psm: i32,
     pub oem: i32,
@@ -19,12 +19,26 @@ pub struct Args {
 impl Default for Args {
     fn default() -> Self {
         Args {
-            lang: "eng",
-            config_variables: "=",
+            lang: "eng".into(),
+            config_variables: HashMap::new(),
             dpi: 150,
             psm: 3,
             oem: 3,
         }
+    }
+}
+
+impl Args {
+    pub(crate) fn get_config_variable_args(&self) -> Option<String> {
+        if self.config_variables.is_empty() {
+            return None;
+        }
+        let parameter = self
+            .config_variables
+            .iter()
+            .map(|(key, value)| format!("{}={}", key, value))
+            .fold(String::new(), |acc, x| format!("{} {}", acc, x));
+        Some(parameter)
     }
 }
 

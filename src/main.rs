@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use image::io::Reader as ImageReader;
 use rusty_tesseract::{Args, Image};
 /// Refer to https://github.com/thomasgruebl/rusty-tesseract
@@ -22,15 +24,27 @@ fn main() {
     let tesseract_version = rusty_tesseract::get_tesseract_version().unwrap();
     println!("The tesseract version is: {}", tesseract_version);
 
+    let tesseract_langs = rusty_tesseract::get_tesseract_langs().unwrap();
+    println!("The available languages are: {:?}", tesseract_langs);
+
     // fill your own argument struct if needed
     let image_to_string_args = Args {
-        lang: "eng",
-        // config_variables: "=",       <----- if no config variables are needed, otherwise:
-        config_variables: "'tessedit_char_whitelist=abcdefghijklmnopqrstuvwABCDEFGHIJKLMNOPQRSTUVWXYZ'",
+        lang: "eng".into(),
+        config_variables: HashMap::from([(
+            "tessedit_char_whitelist".into(),
+            "abcdefghijklmnopqrstuvwABCDEFGHIJKLMNOPQRSTUVWXYZ".into(),
+        )]),
         dpi: 150,
         psm: 6,
         oem: 3,
     };
+
+    //you can get the list of available config variables with:
+    let parameters = rusty_tesseract::get_tesseract_config_parameters().unwrap();
+    println!(
+        "Example config variable: {}",
+        parameters.config_parameters.first().unwrap(),
+    );
 
     let output = rusty_tesseract::image_to_string(&img, &image_to_string_args).unwrap();
     println!("\nThe String output is: {}", output);
