@@ -32,7 +32,7 @@ fn main() {
         lang: "eng".into(),
         config_variables: HashMap::from([(
             "tessedit_char_whitelist".into(),
-            "abcdefghijklmnopqrstuvwABCDEFGHIJKLMNOPQRSTUVWXYZ".into(),
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".into(),
         )]),
         dpi: 150,
         psm: 6,
