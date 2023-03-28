@@ -78,7 +78,7 @@ let mut my_args = Args {
     //available arguments can be found by running 'rusty_tesseract::get_tesseract_config_parameters()'
     config_variables: HashMap::from([(
             "tessedit_char_whitelist".into(),
-            "abcdefghijklmnopqrstuvwABCDEFGHIJKLMNOPQRSTUVWXYZ".into(),
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".into(),
         )]),
     dpi: 150,       // specify DPI for input image
     psm: 3,         // define page segmentation mode 6 (i.e. "Assume a single uniform block of text")
@@ -94,7 +94,7 @@ Choose either string, bounding box or data output:
 // define parameters
 let mut my_args = Args {
     lang: "eng",
-    config_variables: "'tessedit_char_whitelist=abcdefghijklmnopqrstuvwABCDEFGHIJKLMNOPQRSTUVWXYZ'",
+    config_variables: "'tessedit_char_whitelist=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'",
     dpi: 150,
     psm: 6,
     oem: 3
