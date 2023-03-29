@@ -1,6 +1,5 @@
-use core::fmt;
-
 use super::*;
+use core::fmt;
 
 #[derive(Debug, PartialEq)]
 pub struct DataOutput {
@@ -51,35 +50,22 @@ impl fmt::Display for Data {
     }
 }
 
-impl Data {
-    fn parse(line: &str) -> Option<Self> {
+impl FromLine for Data {
+    fn from_line(line: &str) -> Option<Self> {
         let mut x = line.split_whitespace();
-        let level = str::parse::<i32>(x.next()?).ok()?;
-        let page_num = str::parse::<i32>(x.next()?).ok()?;
-        let block_num = str::parse::<i32>(x.next()?).ok()?;
-        let par_num = str::parse::<i32>(x.next()?).ok()?;
-        let line_num = str::parse::<i32>(x.next()?).ok()?;
-        let word_num = str::parse::<i32>(x.next()?).ok()?;
-        let left = str::parse::<i32>(x.next()?).ok()?;
-        let top = str::parse::<i32>(x.next()?).ok()?;
-        let width = str::parse::<i32>(x.next()?).ok()?;
-        let height = str::parse::<i32>(x.next()?).ok()?;
-        let conf = str::parse::<f32>(x.next()?).ok()?;
-        let text = x.next().unwrap_or("").to_string();
-
         Some(Data {
-            level,
-            page_num,
-            block_num,
-            par_num,
-            line_num,
-            word_num,
-            left,
-            top,
-            width,
-            height,
-            conf,
-            text,
+            level: parse_next(&mut x)?,
+            page_num: parse_next(&mut x)?,
+            block_num: parse_next(&mut x)?,
+            par_num: parse_next(&mut x)?,
+            line_num: parse_next(&mut x)?,
+            word_num: parse_next(&mut x)?,
+            left: parse_next(&mut x)?,
+            top: parse_next(&mut x)?,
+            width: parse_next(&mut x)?,
+            height: parse_next(&mut x)?,
+            conf: parse_next(&mut x)?,
+            text: x.next().unwrap_or("").to_string(),
         })
     }
 }
@@ -101,8 +87,7 @@ fn string_to_data(output: &str) -> TessResult<Vec<Data>> {
         .into_iter()
         .skip(1)
         .map(|line| Data::parse(line.into()))
-        .collect::<Option<Vec<Data>>>()
-        .ok_or(TessError::ParseError)
+        .collect::<_>()
 }
 
 #[cfg(test)]
@@ -155,5 +140,15 @@ mod tests {
             )
             .unwrap()
         );
+    }
+
+    #[test]
+    fn test_string_to_data_parse_error() {
+        let result = string_to_data("level   page_num        block_num       par_num line_num        word_num        left    top     width   height  conf    text\n\
+        Test");
+        assert_eq!(
+            result,
+            Err(TessError::ParseError("invalid line 'Test'".into()))
+        )
     }
 }
