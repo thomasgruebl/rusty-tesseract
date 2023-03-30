@@ -1,6 +1,5 @@
-use core::fmt;
-
 use super::*;
+use core::fmt;
 
 #[derive(Debug, PartialEq)]
 pub struct ConfigParameterOutput {
@@ -31,10 +30,10 @@ impl fmt::Display for ConfigParameter {
     }
 }
 
-impl ConfigParameter {
-    fn parse(line: &str) -> Option<Self> {
-        let (name, x) = line.split_once("\t").unwrap();
-        let (default_value, description) = x.split_once("\t").unwrap();
+impl FromLine for ConfigParameter {
+    fn from_line(line: &str) -> Option<Self> {
+        let (name, x) = line.split_once("\t")?;
+        let (default_value, description) = x.split_once("\t")?;
 
         Some(ConfigParameter {
             name: name.into(),
@@ -63,8 +62,7 @@ fn string_to_config_parameter_output(output: &str) -> TessResult<Vec<ConfigParam
         .lines()
         .skip(1)
         .map(|line| ConfigParameter::parse(line))
-        .collect::<Option<Vec<ConfigParameter>>>()
-        .ok_or(TessError::ParseError)
+        .collect::<_>()
 }
 
 #[cfg(test)]
@@ -107,5 +105,20 @@ mod tests {
         };
 
         assert_eq!(*x, expected);
+    }
+
+    #[test]
+    fn test_string_to_config_parameter_output_parse_error() {
+        let result = string_to_config_parameter_output(
+            "Tesseract parameters:\n\
+        log_level\t2147483647\tLogging level\n\
+        Test\n\
+        textord_debug_block\t0\tBlock to do debug on\n\
+        textord_pitch_range\t2\tMax range test on pitch",
+        );
+        assert_eq!(
+            result,
+            Err(TessError::ParseError("invalid line 'Test'".into()))
+        )
     }
 }

@@ -33,12 +33,13 @@ impl Args {
         if self.config_variables.is_empty() {
             return None;
         }
-        let parameter = self
-            .config_variables
-            .iter()
-            .map(|(key, value)| format!("{}={}", key, value))
-            .fold(String::new(), |acc, x| format!("{} {}", acc, x));
-        Some(parameter)
+        Some(
+            self.config_variables
+                .iter()
+                .map(|(key, value)| format!("{}={}", key, value))
+                .collect::<Vec<_>>()
+                .join(" "),
+        )
     }
 }
 
@@ -56,10 +57,6 @@ impl Image {
         })
     }
 
-    const FORMATS: [&'static str; 10] = [
-        "JPEG", "JPG", "PNG", "PBM", "PGM", "PPM", "TIFF", "BMP", "GIF", "WEBP",
-    ];
-
     fn check_image_format(path: &Path) -> TessResult<()> {
         let binding = path
             .extension()
@@ -67,7 +64,10 @@ impl Image {
             .to_str()
             .ok_or(TessError::ImageFormatError)?
             .to_uppercase();
-        if Self::FORMATS.contains(&binding.as_str()) {
+        if matches!(
+            binding.as_str(),
+            "JPEG" | "JPG" | "PNG" | "PBM" | "PGM" | "PPM" | "TIFF" | "BMP" | "GIF" | "WEBP"
+        ) {
             Ok(())
         } else {
             Err(TessError::ImageFormatError)

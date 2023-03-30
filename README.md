@@ -18,7 +18,7 @@ A Rust wrapper for Google Tesseract
 Add the following line to your <b>Cargo.toml</b> file:
 
 ```rust
-rusty-tesseract = "1.1.3"
+rusty-tesseract = "1.1.4"
 ```
 
 ## Description
@@ -94,7 +94,10 @@ Choose either string, bounding box or data output:
 // define parameters
 let mut my_args = Args {
     lang: "eng",
-    config_variables: "'tessedit_char_whitelist=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'",
+    config_variables: HashMap::from([(
+            "tessedit_char_whitelist".into(),
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".into(),
+        )]),
     dpi: 150,
     psm: 6,
     oem: 3

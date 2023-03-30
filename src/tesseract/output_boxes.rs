@@ -1,6 +1,5 @@
-use core::fmt;
-
 use super::*;
+use core::fmt;
 
 #[derive(Debug, PartialEq)]
 pub struct BoxOutput {
@@ -34,23 +33,17 @@ impl fmt::Display for Box {
     }
 }
 
-impl Box {
-    fn parse(line: &str) -> Option<Self> {
+impl FromLine for Box {
+    fn from_line(line: &str) -> Option<Self> {
         let mut x = line.split_whitespace();
-        let symbol = x.next()?.to_string();
-        let left = str::parse::<i32>(x.next()?).ok()?;
-        let bottom = str::parse::<i32>(x.next()?).ok()?;
-        let right = str::parse::<i32>(x.next()?).ok()?;
-        let top = str::parse::<i32>(x.next()?).ok()?;
-        let page = str::parse::<i32>(x.next()?).ok()?;
 
         Some(Box {
-            symbol,
-            left,
-            bottom,
-            right,
-            top,
-            page,
+            symbol: x.next()?.to_string(),
+            left: parse_next(&mut x)?,
+            bottom: parse_next(&mut x)?,
+            right: parse_next(&mut x)?,
+            top: parse_next(&mut x)?,
+            page: parse_next(&mut x)?,
         })
     }
 }
@@ -69,8 +62,7 @@ fn string_to_boxes(output: &str) -> TessResult<Vec<Box>> {
         .lines()
         .into_iter()
         .map(|line| Box::parse(line.into()))
-        .collect::<Option<Vec<Box>>>()
-        .ok_or(TessError::ParseError)
+        .collect::<_>()
 }
 
 #[cfg(test)]
@@ -128,5 +120,16 @@ mod tests {
             )
             .unwrap()
         );
+    }
+
+    #[test]
+    fn test_string_to_boxes_parse_error() {
+        let result = string_to_boxes("L 18 X 36 59 0");
+        assert_eq!(
+            result,
+            Err(TessError::ParseError(
+                "invalid line 'L 18 X 36 59 0'".into()
+            ))
+        )
     }
 }
