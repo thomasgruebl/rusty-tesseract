@@ -18,7 +18,7 @@ A Rust wrapper for Google Tesseract
 Add the following line to your <b>Cargo.toml</b> file:
 
 ```rust
-rusty-tesseract = "1.1.4"
+rusty-tesseract = "1.1.5"
 ```
 
 ## Description
