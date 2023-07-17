@@ -5,8 +5,8 @@ pub enum TessError {
     #[error("Tesseract not found. Please check installation path!")]
     TesseractNotFoundError,
 
-    #[error("Invalid Tesseract version!\n{0}")]
-    VersionError(String),
+    #[error("Command ExitStatusError\n{0}")]
+    CommandExitStatusError(String, String),
 
     #[error(
         "Image format not within the list of allowed image formats:\n\
