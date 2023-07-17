@@ -18,13 +18,13 @@ A Rust wrapper for Google Tesseract
 Add the following line to your <b>Cargo.toml</b> file:
 
 ```rust
-rusty-tesseract = "1.1.5"
+rusty-tesseract = "1.1.6"
 ```
 
 ## Description
 
 - Brings all relevant command-line tesseract functionality to Rust
-- Based on the Python wrapper for tesseract (i.e. https://github.com/madmaze/pytesseract)
+- Partly based on the Python wrapper for tesseract (i.e. https://github.com/madmaze/pytesseract)
 - Enables testing a pre-trained tesseract model and outputting the results in different formats such as strings, bounding boxes, dicts, or dataframes.
 
 ## Dependencies
@@ -127,7 +127,7 @@ println!(
 println!("The full data output is:\n{}", data_output.output);
 ```
 
-### Get informations about tesseract
+### Get information about tesseract
 
 ```rust
 //tesseract version
