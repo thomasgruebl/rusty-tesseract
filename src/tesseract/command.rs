@@ -57,10 +57,10 @@ pub(crate) fn run_tesseract_command(command: &mut Command) -> TessResult<String>
     let out = String::from_utf8(output.stdout).unwrap();
     let err = String::from_utf8(output.stderr).unwrap();
     let status = output.status;
-
+   
     match status.code() {
         Some(0) => Ok(out),
-        _ => Err(TessError::VersionError(err)),
+        _ => Err(TessError::CommandExitStatusError(status.to_string(), err)),
     }
 }
 
