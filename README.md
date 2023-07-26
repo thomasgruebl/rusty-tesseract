@@ -61,13 +61,14 @@ let default_args = Args::default();
 /*
 Args {
     lang: "eng",
-    dpi: 150,
-    psm: 3,
-    oem: 3,
+    dpi: Some(150),
+    psm: Some(3),
+    oem: Some(3),
 }
 */
 
 // fill your own argument struct if needed
+// Optional arguments are ignored if set to `None`
 let mut my_args = Args {
     //model language (tesseract default = 'eng')
     //available languages can be found by running 'rusty_tesseract::get_tesseract_langs()'
@@ -80,9 +81,9 @@ let mut my_args = Args {
             "tessedit_char_whitelist".into(),
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".into(),
         )]),
-    dpi: 150,       // specify DPI for input image
-    psm: 3,         // define page segmentation mode 6 (i.e. "Assume a single uniform block of text")
-    oem: 3,         // define optical character recognition mode 3 (i.e. "Default, based on what is available")
+    dpi: Some(150),       // specify DPI for input image
+    psm: Some(6),         // define page segmentation mode 6 (i.e. "Assume a single uniform block of text")
+    oem: Some(3),         // define optical character recognition mode 3 (i.e. "Default, based on what is available")
 };
 ```
 
@@ -98,9 +99,9 @@ let mut my_args = Args {
             "tessedit_char_whitelist".into(),
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".into(),
         )]),
-    dpi: 150,
-    psm: 6,
-    oem: 3
+    dpi: Some(150),
+    psm: Some(6),
+    oem: Some(3)
 };
 
 // string output

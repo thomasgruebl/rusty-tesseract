@@ -11,9 +11,9 @@ use crate::{TessError, TessResult};
 pub struct Args {
     pub lang: String,
     pub config_variables: HashMap<String, String>,
-    pub dpi: i32,
-    pub psm: i32,
-    pub oem: i32,
+    pub dpi: Option<i32>,
+    pub psm: Option<i32>,
+    pub oem: Option<i32>,
 }
 
 impl Default for Args {
@@ -21,9 +21,9 @@ impl Default for Args {
         Args {
             lang: "eng".into(),
             config_variables: HashMap::new(),
-            dpi: 150,
-            psm: 3,
-            oem: 3,
+            dpi: Some(150),
+            psm: Some(3),
+            oem: Some(3),
         }
     }
 }

@@ -34,9 +34,9 @@ fn main() {
             "tessedit_char_whitelist".into(),
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".into(),
         )]),
-        dpi: 150,
-        psm: 6,
-        oem: 3,
+        dpi: Some(150),
+        psm: Some(6),
+        oem: Some(3),
     };
 
     //you can get the list of available config variables with:
@@ -76,7 +76,7 @@ mod tests {
         let img = Image::from_path("img/vertical_text.png").unwrap();
 
         let image_to_string_args = Args {
-            psm: 6,
+            psm: Some(6),
             ..Default::default()
         };
 
@@ -100,6 +100,34 @@ mod tests {
         let img = Image::from_path("img/string.png").unwrap();
         let default_args = Args::default();
         let output = rusty_tesseract::image_to_string(&img, &default_args).unwrap();
+        assert_eq!(output.trim(), "LOREM IPSUM DOLOR SIT AMET");
+    }
+
+    #[test]
+    fn command_without_options() {
+        let img = Image::from_path("img/string.png").unwrap();
+        let args = Args {
+            dpi: None,
+            psm: None,
+            oem: None,
+            ..Args::default()
+        };
+
+        let output = rusty_tesseract::image_to_string(&img, &args).unwrap();
+        assert_eq!(output.trim(), "LOREM IPSUM DOLOR SIT AMET");
+    }
+
+    #[test]
+    fn command_with_partial_options() {
+        let img = Image::from_path("img/string.png").unwrap();
+        let args = Args {
+            dpi: Some(300),
+            psm: None,
+            oem: None,
+            ..Args::default()
+        };
+
+        let output = rusty_tesseract::image_to_string(&img, &args).unwrap();
         assert_eq!(output.trim(), "LOREM IPSUM DOLOR SIT AMET");
     }
 }
