@@ -121,7 +121,7 @@ mod tests {
     fn test_image_to_data() {
         let img = Image::from_path("img/string.png").unwrap();
         let mut image_to_boxes_args = Args::default();
-        image_to_boxes_args.psm = 6;
+        image_to_boxes_args.psm = Some(6);
 
         let result = tesseract::image_to_data(&img, &image_to_boxes_args).unwrap();
         assert_eq!(

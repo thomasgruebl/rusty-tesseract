@@ -89,7 +89,7 @@ mod tests {
     fn test_image_to_boxes() {
         let img = Image::from_path("img/string.png").unwrap();
         let mut image_to_boxes_args = Args::default();
-        image_to_boxes_args.psm = 6;
+        image_to_boxes_args.psm = Some(6);
 
         let result = image_to_boxes(&img, &image_to_boxes_args).unwrap();
         assert_eq!(

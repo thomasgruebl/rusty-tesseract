@@ -57,7 +57,7 @@ pub(crate) fn run_tesseract_command(command: &mut Command) -> TessResult<String>
     let out = String::from_utf8(output.stdout).unwrap();
     let err = String::from_utf8(output.stderr).unwrap();
     let status = output.status;
-   
+
     match status.code() {
         Some(0) => Ok(out),
         _ => Err(TessError::CommandExitStatusError(status.to_string(), err)),
@@ -91,13 +91,19 @@ pub(crate) fn create_tesseract_command(image: &Image, args: &Args) -> TessResult
         .arg(image.get_image_path()?)
         .arg("stdout")
         .arg("-l")
-        .arg(args.lang.clone())
-        .arg("--dpi")
-        .arg(args.dpi.to_string())
-        .arg("--psm")
-        .arg(args.psm.to_string())
-        .arg("--oem")
-        .arg(args.oem.to_string());
+        .arg(args.lang.clone());
+
+    if let Some(dpi) = args.dpi {
+        command.arg("--dpi").arg(dpi.to_string());
+    }
+
+    if let Some(psm) = args.psm {
+        command.arg("--psm").arg(psm.to_string());
+    }
+
+    if let Some(oem) = args.oem {
+        command.arg("--oem").arg(oem.to_string());
+    }
 
     if let Some(parameter) = args.get_config_variable_args() {
         command.arg("-c").arg(parameter);
