@@ -2,16 +2,24 @@
 
 A Rust wrapper for Google Tesseract
 
-![GitHub last commit](https://img.shields.io/github/last-commit/thomasgruebl/rusty-tesseract?style=plastic) ![GitHub](https://img.shields.io/github/license/thomasgruebl/rusty-tesseract?style=plastic) <a style="text-decoration: none" href="https://github.com/thomasgruebl/rusty-tesseract/stargazers">
+![Crates.io](https://img.shields.io/crates/d/rusty-tesseract?style=plastic)
+![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/thomasgruebl/rusty-tesseract?style=plastic)
+![GitHub last commit](https://img.shields.io/github/last-commit/thomasgruebl/rusty-tesseract?style=plastic)
+![GitHub](https://img.shields.io/github/license/thomasgruebl/rusty-tesseract?style=plastic)
+<a style="text-decoration: none" href="https://github.com/thomasgruebl/rusty-tesseract/stargazers">
 <img src="https://img.shields.io/github/stars/thomasgruebl/rusty-tesseract.svg?style=plastic" alt="Stars">
 </a>
 <a style="text-decoration: none" href="https://github.com/thomasgruebl/rusty-tesseract/fork">
 <img src="https://img.shields.io/github/forks/thomasgruebl/rusty-tesseract.svg?style=plastic" alt="Forks">
 </a>
-![Github All Releases](https://img.shields.io/github/downloads/thomasgruebl/rusty-tesseract/total.svg?style=plastic)
+<a style="text-decoration: none" href="https://github.com/thomasgruebl/rusty-tesseract/graphs/contributors" alt="Contributors">
+<img src="https://img.shields.io/github/contributors/thomasgruebl/rusty-tesseract.svg?style=plastic" />
+</a>
 <a style="text-decoration: none" href="https://github.com/thomasgruebl/rusty-tesseract/issues">
 <img src="https://img.shields.io/github/issues/thomasgruebl/rusty-tesseract.svg?style=plastic" alt="Issues">
 </a>
+
+
 
 ## Installation
 
