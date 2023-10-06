@@ -29,17 +29,11 @@ impl Default for Args {
 }
 
 impl Args {
-    pub(crate) fn get_config_variable_args(&self) -> Option<String> {
-        if self.config_variables.is_empty() {
-            return None;
-        }
-        Some(
-            self.config_variables
-                .iter()
-                .map(|(key, value)| format!("{}={}", key, value))
-                .collect::<Vec<_>>()
-                .join(" "),
-        )
+    pub(crate) fn get_config_variable_args(&self) -> Vec<String> {
+        self.config_variables
+            .iter()
+            .map(|(key, value)| format!("{}={}", key, value))
+            .collect::<Vec<_>>()
     }
 }
 
