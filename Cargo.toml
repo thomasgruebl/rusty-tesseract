@@ -1,6 +1,6 @@
 [package]
 name = "rusty-tesseract"
-version = "1.1.7"
+version = "1.1.8"
 edition = "2021"
 authors = ["thomasgruebl"]
 description = "A Rust wrapper for Google Tesseract"
