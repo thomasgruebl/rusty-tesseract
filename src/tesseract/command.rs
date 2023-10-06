@@ -105,7 +105,7 @@ pub(crate) fn create_tesseract_command(image: &Image, args: &Args) -> TessResult
         command.arg("--oem").arg(oem.to_string());
     }
 
-    if let Some(parameter) = args.get_config_variable_args() {
+    for parameter in args.get_config_variable_args() {
         command.arg("-c").arg(parameter);
     }
 
