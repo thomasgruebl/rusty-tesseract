@@ -85,7 +85,7 @@ impl Image {
         })
     }
 
-    pub(crate) fn get_image_path(&self) -> TessResult<&str> {
+    pub fn get_image_path(&self) -> TessResult<&str> {
         match &self.data {
             InputData::Path(x) => x.to_str(),
             InputData::Image(x) => x.path().to_str(),

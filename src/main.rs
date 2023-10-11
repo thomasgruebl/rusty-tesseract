@@ -9,7 +9,9 @@ fn main() {
     // create an Image object by specifying a path or alternatively a DynamicImage from the image crate https://docs.rs/image/latest/image/
 
     // you can use the from_path function
-    let _ = Image::from_path("img/string.png");
+    let test_image = Image::from_path("img/string.png").unwrap();
+    println!("test image is stored at: {}", test_image.get_image_path().unwrap());
+
 
     // or instantiate Image from a DynamicImage
     let dynamic_image = ImageReader::open("img/string.png")
@@ -17,6 +19,8 @@ fn main() {
         .decode()
         .unwrap();
     let img = Image::from_dynamic_image(&dynamic_image).unwrap();
+
+    println!("temp image is stored at: {}", img.get_image_path().unwrap());
 
     // use default_args to call a function if no particular config is needed
     let default_args = Args::default();
